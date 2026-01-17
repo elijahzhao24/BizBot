@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bizbot-shared"
+version = "0.1.0"
+description = "Shared services for BizBot"
+requires-python = ">=3.10"
+dependencies = [
+  "pydantic==2.8.2",
+  "pydantic-settings==2.4.0",
+  "supabase==2.6.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["bizbot_shared*"]
