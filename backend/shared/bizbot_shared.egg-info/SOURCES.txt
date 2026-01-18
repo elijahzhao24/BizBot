@@ -10,6 +10,9 @@ bizbot_shared/core/__init__.py
 bizbot_shared/core/config.py
 bizbot_shared/core/logging.py
 bizbot_shared/schemas/__init__.py
-bizbot_shared/schemas/images.py
+bizbot_shared/schemas/photos.py
 bizbot_shared/services/__init__.py
+bizbot_shared/services/gemini_scorer.py
+bizbot_shared/services/photo_pipeline.py
+bizbot_shared/services/photo_repo.py
 bizbot_shared/services/supabase_storage.py

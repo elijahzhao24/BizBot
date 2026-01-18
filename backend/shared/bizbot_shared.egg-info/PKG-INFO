@@ -5,4 +5,5 @@ Summary: Shared services for BizBot
 Requires-Python: >=3.10
 Requires-Dist: pydantic==2.8.2
 Requires-Dist: pydantic-settings==2.4.0
+Requires-Dist: requests==2.32.5
 Requires-Dist: supabase==2.6.0
