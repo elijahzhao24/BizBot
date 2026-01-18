@@ -9,7 +9,7 @@ Instant event photos.
 
 ## Setup (API)
 ```bash
-cd Backend/api
+cd backend/api
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 pip install -e ../shared

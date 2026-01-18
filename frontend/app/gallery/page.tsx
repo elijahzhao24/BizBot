@@ -7,14 +7,11 @@ import { SiteHeader } from '@/components/site-header';
 const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
 
 type GalleryItem = {
-  name: string;
-  created_at?: string | null;
+  name?: string;
   url: string;
 };
 
-const placeholders = Array.from({ length: 9 }, (_, index) => ({
-  name: `placeholder-${index + 1}`,
-  created_at: null,
+const placeholders = Array.from({ length: 4 }, () => ({
   url: ''
 }));
 
@@ -31,7 +28,14 @@ export default function GalleryPage() {
           throw new Error('Failed to fetch');
         }
         const payload = await response.json();
-        setItems(payload.items || []);
+        const nextItems = Array.isArray(payload.items)
+          ? payload.items.map((item: { name?: string; url?: string }) => ({
+              name: item?.name,
+              url: item?.url ? encodeURI(item.url) : ''
+            }))
+          : [];
+        console.log('Gallery URLs', nextItems.map((item: { url: any; }) => item.url));
+        setItems(nextItems);
         setStatus('idle');
       } catch (err) {
         setItems([]);
@@ -61,15 +65,15 @@ export default function GalleryPage() {
           </div>
         </div>
 
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {galleryItems.map((item) => (
-            <div key={item.name} className="glass group rounded-3xl p-4">
-              <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-ink/90">
+        <div className="mt-10 grid gap-6 md:grid-cols-2">
+          {galleryItems.map((item, index) => (
+            <div key={`${item.url}-${index}`} className="glass group rounded-3xl p-4">
+              <div className="relative aspect-[16/9] overflow-hidden rounded-2xl bg-ink/90">
                 {item.url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={item.url}
-                    alt={item.name}
+                    alt="Captured moment"
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                   />
                 ) : (
@@ -77,17 +81,6 @@ export default function GalleryPage() {
                     <p className="text-sm">Awaiting real photos</p>
                   </div>
                 )}
-              </div>
-              <div className="mt-4 flex items-center justify-between text-sm">
-                <div>
-                  <p className="font-semibold text-ink">{item.name}</p>
-                  <p className="text-muted">
-                    {item.created_at ? new Date(item.created_at).toLocaleString() : 'Coming soon'}
-                  </p>
-                </div>
-                <span className="rounded-full border border-ring/10 px-3 py-1 text-xs text-muted">
-                  Gallery
-                </span>
               </div>
             </div>
           ))}

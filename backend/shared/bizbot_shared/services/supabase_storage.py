@@ -48,6 +48,20 @@ class StorageService:
             raise RuntimeError(signed["error"]["message"])
         return signed.get("signedURL")
 
+    def _is_image_name(self, name: str) -> bool:
+        if name.startswith("."):
+            return False
+        return Path(name).suffix.lower() in {
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".webp",
+            ".gif",
+            ".bmp",
+            ".heic",
+            ".heif",
+        }
+
     def upload_image_bytes(
         self, content: bytes, content_type: str, original_name: str | None
     ) -> tuple[str, str]:
@@ -69,9 +83,11 @@ class StorageService:
         client = self._client_instance()
         res = client.storage.from_(self._settings.supabase_bucket).list(
             path="",
-            limit=limit,
-            offset=offset,
-            sort_by={"column": "created_at", "order": "desc"},
+            options={
+                "limit": limit,
+                "offset": offset,
+                "sortBy": {"column": "created_at", "order": "desc"},
+            },
         )
         if isinstance(res, dict) and res.get("error"):
             raise RuntimeError(res["error"]["message"])
@@ -79,7 +95,7 @@ class StorageService:
         items: list[dict] = []
         for obj in res:
             name = obj.get("name")
-            if not name:
+            if not name or not self._is_image_name(name):
                 continue
             url = self._get_file_url(name)
             items.append(

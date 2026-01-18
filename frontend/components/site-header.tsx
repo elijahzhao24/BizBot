@@ -13,9 +13,6 @@ export function SiteHeader() {
         <Link className="hover:text-ink transition" href="/gallery">
           Gallery
         </Link>
-        <span className="rounded-full border border-ring/10 px-3 py-1 text-xs uppercase tracking-wide text-ink">
-          Local Demo
-        </span>
       </nav>
     </header>
   );
