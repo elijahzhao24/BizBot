@@ -57,3 +57,17 @@ async def list_images(limit: int = 100, offset: int = 0) -> ImageListResponse:
         limit=limit,
         offset=offset,
     )
+
+
+@router.get("/images/oldest", response_model=ImageItem)
+async def get_oldest_image() -> ImageItem:
+    try:
+        item = storage_service.get_oldest_image()
+    except RuntimeError as exc:
+        logger.exception("Oldest image lookup failed")
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    if item is None:
+        raise HTTPException(status_code=404, detail="No images found")
+
+    return ImageItem(**item)

@@ -17,6 +17,14 @@ cp .env.example .env
 uvicorn app.main:app --reload --port 8000
 ```
 
+## Setup (Frontend)
+```bash
+cd frontend
+npm install
+cp .env.example .env.local
+npm run dev
+```
+
 ## Notes
 - The shared package keeps Supabase logic in one place for API and future robot use.
 - For the robot process, direct import (no HTTP) is simplest locally; use HTTP only if you want to decouple or run it separately.
