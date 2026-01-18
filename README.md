@@ -5,7 +5,7 @@ Instant event photos.
 - `Backend/shared`: shared Python package (`bizbot_shared`) for Supabase storage access
 - `Backend/api`: FastAPI service for image upload/list
 - `Backend/robot`: placeholder for future robot main loop (empty for now)
-- `Frontend`: frontend app
+- `frontend`: Next.js frontend app
 
 ## Setup (API)
 ```bash
@@ -15,6 +15,14 @@ pip install -r requirements.txt
 pip install -e ../shared
 cp .env.example .env
 uvicorn app.main:app --reload --port 8000
+```
+
+## Setup (Frontend)
+```bash
+cd frontend
+npm install
+cp .env.example .env.local
+npm run dev
 ```
 
 ## Notes
