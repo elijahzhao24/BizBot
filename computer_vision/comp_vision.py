@@ -159,6 +159,13 @@ while True:
         "wall_detected": bool(wall_detected),
         "action": action
     }
+
+    
+
+    if (action == "SEARCH") :
+        print("hi")
+
+
     print(json.dumps(log_data))
     log_fp.write(json.dumps(log_data) + "\n")
     log_fp.flush()
@@ -166,6 +173,30 @@ while True:
     # exit on'Q'
     if cv2.waitKey(1) & 0xFF == ord("q"):
         break
+
+import serial
+import time
+
+# Establish serial connection (replace 'COM3' with your port name)
+arduino = serial.Serial(port='COM3', baudrate=9600, timeout=.1)
+
+def call_arduino_function(command):
+    # Send the command as bytes
+    arduino.write(bytes(command, 'utf-8'))
+    time.sleep(0.05) # Give the Arduino time to respond
+    # Optional: read and print the response from Arduino
+    data = arduino.readline().decode('utf-8').strip()
+    return data
+
+# Example: call the function associated with command '1'
+response = call_arduino_function('1')
+print(f"Arduino response: {response}")
+
+# Example: call the function associated with command '0' after a delay
+time.sleep(2)
+response = call_arduino_function('0')
+print(f"Arduino response: {response}")
+
 
 # clean
 cap.release()

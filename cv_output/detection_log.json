@@ -1,0 +1,12 @@
+{"people_count": 8, "group_detected": true, "edge_density": 0.02, "obstacle_close": false, "wall_detected": false, "action": "TAKE_PHOTO"}
+{"people_count": 8, "group_detected": true, "edge_density": 0.03, "obstacle_close": false, "wall_detected": false, "action": "TAKE_PHOTO"}
+{"people_count": 9, "group_detected": true, "edge_density": 0.03, "obstacle_close": false, "wall_detected": false, "action": "TAKE_PHOTO"}
+{"people_count": 2, "group_detected": false, "edge_density": 0.0, "obstacle_close": true, "wall_detected": false, "action": "TURN_RIGHT"}
+{"people_count": 2, "group_detected": false, "edge_density": 0.0, "obstacle_close": false, "wall_detected": false, "action": "MOVE_CLOSER"}
+{"people_count": 1, "group_detected": false, "edge_density": 0.0, "obstacle_close": false, "wall_detected": false, "action": "MOVE_CLOSER"}
+{"people_count": 3, "group_detected": false, "edge_density": 0.01, "obstacle_close": false, "wall_detected": false, "action": "MOVE_CLOSER"}
+{"people_count": 4, "group_detected": false, "edge_density": 0.03, "obstacle_close": false, "wall_detected": false, "action": "MOVE_CLOSER"}
+{"people_count": 4, "group_detected": false, "edge_density": 0.01, "obstacle_close": false, "wall_detected": false, "action": "MOVE_CLOSER"}
+{"people_count": 5, "group_detected": false, "edge_density": 0.02, "obstacle_close": false, "wall_detected": false, "action": "MOVE_CLOSER"}
+{"people_count": 5, "group_detected": false, "edge_density": 0.02, "obstacle_close": false, "wall_detected": false, "action": "MOVE_CLOSER"}
+{"people_count": 4, "group_detected": false, "edge_density": 0.04, "obstacle_close": false, "wall_detected": false, "action": "MOVE_CLOSER"}
