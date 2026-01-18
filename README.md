@@ -2,10 +2,10 @@
 Instant event photos.
 
 ## Repo Layout
-- `Backend/shared`: shared Python package (`bizbot_shared`) for Supabase storage access
-- `Backend/api`: FastAPI service for image upload/list
-- `Backend/robot`: placeholder for future robot main loop (empty for now)
-- `frontend`: Next.js frontend app
+- `backend/shared`: shared Python package (`bizbot_shared`) for Supabase storage access
+- `backend/api`: FastAPI service for image upload/list
+- `backend/robot`: placeholder for future robot main loop (empty for now)
+- `frontend`: frontend app
 
 ## Setup (API)
 ```bash
