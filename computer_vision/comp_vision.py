@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import json
 import os
+import httpx
 from datetime import datetime
 from ultralytics import YOLO
 from sklearn.cluster import DBSCAN
@@ -16,18 +17,21 @@ OBSTACLE_AREA_THRESHOLD = 0.50
 EDGE_DENSITY_THRESHOLD = 0.15
 OUTPUT_DIR = "cv_output"
 
-# Create output directory if it doesn't exist
+# Create output directories if they don't exist
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # Open log file for writing
 log_file = os.path.join(OUTPUT_DIR, "detection_log.json")
 log_fp = open(log_file, "w")
 
+# API endpoint for uploads
+API_URL = "http://localhost:8000/upload"  # Change to your backend URL
+
 # --------------------
 # Load model
 # --------------------
 model = YOLO("yolov8s.pt")
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 
 print("CV system running. Press Q to quit.")
 
@@ -105,8 +109,21 @@ while True:
     elif group_detected and total_people_area > PHOTO_AREA_THRESHOLD * frame_area and len(people_boxes) >= 5:
         action = "TAKE_PHOTO"
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        photo_path = os.path.join(OUTPUT_DIR, f"group_photo_{timestamp}.jpg")
-        cv2.imwrite(photo_path, frame)
+        _, buffer = cv2.imencode('.jpg', frame)
+        file_content = buffer.tobytes()
+        
+        try:
+            with httpx.Client() as client:
+                response = client.post(
+                    API_URL,
+                    files={"file": (f"group_photo_{timestamp}.jpg", file_content, "image/jpeg")}
+                )
+                if response.status_code == 200:
+                    print(f"✅ Photo uploaded: {response.json()}")
+                else:
+                    print(f"❌ Upload failed: {response.status_code}")
+        except Exception as e:
+            print(f"❌ Upload error: {e}")
     elif group_detected:
         action = "MOVE_CLOSER"
     elif len(people_boxes) > 0:

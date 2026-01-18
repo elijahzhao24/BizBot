@@ -72,12 +72,16 @@ class GeminiScorer:
 
     def score_image(self, image_bytes: bytes, content_type: str) -> float:
         if not self._settings.gemini_api_key:
+            logger.error("GEMINI_API_KEY is not set")
             raise RuntimeError("GEMINI_API_KEY is required")
 
         encoded = base64.b64encode(image_bytes).decode("utf-8")
+        
+        model = "gemini-2.0-flash"
+        
         url = (
             "https://generativelanguage.googleapis.com/v1beta/models/"
-            f"{self._settings.gemini_model}:generateContent"
+            f"{model}:generateContent"
             f"?key={self._settings.gemini_api_key}"
         )
         payload = {
@@ -99,10 +103,16 @@ class GeminiScorer:
                 {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
             ],
         }
-        logger.info("Gemini request model=%s bytes=%d", self._settings.gemini_model, len(image_bytes))
-        response = requests.post(url, json=payload, timeout=30)
+        logger.info("Gemini request model=%s bytes=%d", model, len(image_bytes))
+        try:
+            response = requests.post(url, json=payload, timeout=30)
+        except requests.exceptions.RequestException as exc:
+            logger.error("Gemini request failed: %s", exc)
+            raise RuntimeError(f"Gemini request failed: {exc}") from exc
+        
         if response.status_code >= 400:
             logger.error("Gemini API error %s: %s", response.status_code, response.text)
+            logger.error("Available models can be checked at: https://ai.google.dev/gemini-api/docs/models/gemini")
             raise RuntimeError(f"Gemini API error {response.status_code}: {response.text}")
 
         data = response.json()
