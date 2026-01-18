@@ -13,6 +13,9 @@ export function SiteHeader() {
         <Link className="hover:text-ink transition" href="/gallery">
           Gallery
         </Link>
+        <Link className="hover:text-ink transition" href="/admin">
+          Admin
+        </Link>
       </nav>
     </header>
   );
