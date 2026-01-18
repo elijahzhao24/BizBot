@@ -1,5 +1,6 @@
 import base64
 import json
+import logging
 
 import requests
 
@@ -14,6 +15,8 @@ _SCORE_SCHEMA = {
     "required": ["score"],
     "additionalProperties": False,
 }
+
+logger = logging.getLogger("bizbot_gemini")
 
 _PROMPT = (
     "You are a photo quality rater for an event robot camera system.\n"
@@ -58,8 +61,6 @@ class GeminiScorer:
             ],
             "generationConfig": {
                 "temperature": 0.2,
-                "responseMimeType": "application/json",
-                "responseSchema": _SCORE_SCHEMA,
             },
             "safetySettings": [
                 {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
@@ -68,9 +69,10 @@ class GeminiScorer:
                 {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
             ],
         }
-
+        logger.info("Gemini request model=%s bytes=%d", self._settings.gemini_model, len(image_bytes))
         response = requests.post(url, json=payload, timeout=30)
         if response.status_code >= 400:
+            logger.error("Gemini API error %s: %s", response.status_code, response.text)
             raise RuntimeError(f"Gemini API error {response.status_code}: {response.text}")
 
         data = response.json()
@@ -80,14 +82,17 @@ class GeminiScorer:
         try:
             text = data["candidates"][0]["content"]["parts"][0]["text"]
         except (KeyError, IndexError) as exc:
+            logger.error("Gemini response missing content: %s", data)
             raise RuntimeError("Gemini response missing content") from exc
 
         try:
             payload = json.loads(text)
         except json.JSONDecodeError as exc:
+            logger.error("Gemini response was not valid JSON: %s", text)
             raise RuntimeError("Gemini response was not valid JSON") from exc
 
         if "score" not in payload:
+            logger.error("Gemini response missing score: %s", payload)
             raise RuntimeError("Gemini response missing score")
 
         score = float(payload["score"])
