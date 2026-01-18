@@ -42,6 +42,13 @@ API endpoints:
 - `GET /admin/settings`
 - `PATCH /admin/settings`
 
+## Setup (Shared Only)
+```bash
+cd backend/shared
+python -m venv .venv && source .venv/bin/activate
+pip install -e .
+```
+
 ## Setup (Frontend)
 ```bash
 cd frontend

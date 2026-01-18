@@ -1,6 +1,7 @@
 import base64
 import json
 import logging
+import re
 
 import requests
 
@@ -32,13 +33,42 @@ _PROMPT = (
     "\n"
     "Return ONLY JSON matching the schema.\n"
     "Return: { \"score\": float 0.0 to 1.0 }\n"
-    "If uncertain, return around 0.5."
+    "If uncertain, return around 0.8.\n"
+    "Be very generous on the judging and only mark lower than 0.8 if there are very clear technical photo issues, The photos are supposed to be candid/B-roll\n"
 )
 
 
 class GeminiScorer:
     def __init__(self, settings: Settings) -> None:
         self._settings = settings
+
+    def _extract_json(self, text: str) -> dict:
+        cleaned = text.strip()
+        if cleaned.startswith("```"):
+            cleaned = re.sub(r"^```[a-zA-Z]*\s*", "", cleaned)
+            cleaned = re.sub(r"```\s*$", "", cleaned).strip()
+
+        try:
+            return json.loads(cleaned)
+        except json.JSONDecodeError:
+            match = re.search(r"\{.*\}", cleaned, re.DOTALL)
+            if not match:
+                raise
+            return json.loads(match.group(0))
+
+    def _extract_score(self, text: str) -> float:
+        try:
+            payload = self._extract_json(text)
+            if "score" in payload:
+                return float(payload["score"])
+        except json.JSONDecodeError:
+            pass
+
+        match = re.search(r"\"score\"\s*:\s*([0-9]+(?:\.[0-9]+)?)", text)
+        if match:
+            return float(match.group(1))
+
+        raise RuntimeError("Gemini response missing score")
 
     def score_image(self, image_bytes: bytes, content_type: str) -> float:
         if not self._settings.gemini_api_key:
@@ -86,16 +116,12 @@ class GeminiScorer:
             raise RuntimeError("Gemini response missing content") from exc
 
         try:
-            payload = json.loads(text)
-        except json.JSONDecodeError as exc:
-            logger.error("Gemini response was not valid JSON: %s", text)
-            raise RuntimeError("Gemini response was not valid JSON") from exc
+            score = self._extract_score(text)
+        except Exception as exc:
+            logger.error("Gemini score parse failed: %s", text)
+            raise RuntimeError("Gemini response missing score") from exc
 
-        if "score" not in payload:
-            logger.error("Gemini response missing score: %s", payload)
-            raise RuntimeError("Gemini response missing score")
-
-        score = float(payload["score"])
+        logger.info("Gemini score parsed: %s", score)
         if score < 0.0 or score > 1.0:
             raise RuntimeError("Gemini score out of range")
 
