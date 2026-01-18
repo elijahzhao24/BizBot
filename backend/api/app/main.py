@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers.images import router as images_router
+from app.routers.robot import router as robot_router
 
 logging.basicConfig(level=logging.INFO)
 
@@ -17,3 +18,4 @@ app.add_middleware(
 )
 
 app.include_router(images_router)
+app.include_router(robot_router)

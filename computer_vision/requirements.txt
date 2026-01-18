@@ -1,0 +1,6 @@
+httpx
+numpy
+opencv-python
+pyserial
+scikit-learn
+ultralytics

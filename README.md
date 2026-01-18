@@ -49,6 +49,19 @@ python -m venv .venv && source .venv/bin/activate
 pip install -e .
 ```
 
+## Setup (Computer Vision)
+From the repo root:
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -r computer_vision/requirements.txt
+python computer_vision/comp_vision.py
+```
+
+Notes:
+- Requires a webcam; adjust `cv2.VideoCapture(1)` in `computer_vision/comp_vision.py` if your camera index differs.
+- The upload target is `API_URL` in `computer_vision/comp_vision.py` (defaults to `http://localhost:8000/upload`).
+- For Arduino testing: update the serial port in `computer_vision/test_arduino.py`, then run `python computer_vision/test_arduino.py`.
+
 ## Setup (Frontend)
 ```bash
 cd frontend
