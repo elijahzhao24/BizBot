@@ -7,6 +7,9 @@ export function SiteHeader() {
         BizBot
       </Link>
       <nav className="flex items-center gap-6 text-sm font-medium text-muted">
+        <Link className="hover:text-ink transition" href="/photobooth">
+          Photobooth
+        </Link>
         <Link className="hover:text-ink transition" href="/control">
           Control
         </Link>
