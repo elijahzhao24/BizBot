@@ -55,7 +55,7 @@ export default function Home() {
             </Link>
           </div>
           <div className="grid gap-4 pt-6 md:grid-cols-2">
-            {['Realtime status', 'Local upload', 'Private by design', 'Fast setup'].map(
+            {['Realtime status', 'Cloud upload', 'Private by design', 'Fast setup'].map(
               (item, index) => (
                 <div
                   key={item}
