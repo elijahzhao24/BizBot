@@ -1,5 +1,6 @@
 import Link from 'next/link';
 
+import { HeroCarousel } from '@/components/hero-carousel';
 import { SiteHeader } from '@/components/site-header';
 import { StatusPill } from '@/components/status-pill';
 
@@ -69,18 +70,9 @@ export default function Home() {
         </div>
         <div className="relative">
           <div className="glass rounded-3xl p-6 opacity-0 animate-fade-up" style={{ animationDelay: '200ms' }}>
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-muted">Live Feed Snapshot</p>
-              <span className="rounded-full bg-accent/20 px-3 py-1 text-xs text-ink">Demo</span>
-            </div>
-            <div className="mt-4 aspect-[4/5] w-full rounded-2xl bg-gradient-to-br from-ink to-ink/70 p-4 text-white">
-              <div className="flex h-full flex-col justify-between">
-                <div className="text-xs uppercase tracking-[0.2em] text-white/60">Scene</div>
-                <div>
-                  <p className="text-lg font-semibold">Dance Floor A</p>
-                  <p className="text-sm text-white/60">12 people detected</p>
-                </div>
-              </div>
+            <p className="text-sm font-semibold text-muted">Demo Reel</p>
+            <div className="mt-4">
+              <HeroCarousel />
             </div>
             <div className="mt-4 grid grid-cols-3 gap-3 text-xs text-muted">
               <div>

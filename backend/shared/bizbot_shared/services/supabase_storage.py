@@ -106,3 +106,27 @@ class StorageService:
                 }
             )
         return items
+
+    def get_oldest_image(self) -> dict | None:
+        client = self._client_instance()
+        res = client.storage.from_(self._settings.supabase_bucket).list(
+            path="",
+            options={
+                "limit": 100,
+                "offset": 0,
+                "sortBy": {"column": "created_at", "order": "asc"},
+            },
+        )
+        if isinstance(res, dict) and res.get("error"):
+            raise RuntimeError(res["error"]["message"])
+
+        for obj in res:
+            name = obj.get("name")
+            if not name or not self._is_image_name(name):
+                continue
+            return {
+                "name": name,
+                "created_at": obj.get("created_at"),
+                "url": self._get_file_url(name),
+            }
+        return None
