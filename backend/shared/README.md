@@ -14,3 +14,9 @@ The shared settings read from `.env` in the current working directory:
 - `SUPABASE_BUCKET` (default `images`)
 - `SUPABASE_PUBLIC_BUCKET` (`true` or `false`)
 - `SUPABASE_SIGNED_URL_SECONDS` (seconds, default 600)
+- `GEMINI_API_KEY`
+- `GEMINI_MODEL` (default `gemini-2.5-flash`)
+- `DEFAULT_THRESHOLD` (default `0.75`)
+
+## Database
+Apply the migration in `migrations/001_photos_and_settings.sql` to create the `photos` and `settings` tables.

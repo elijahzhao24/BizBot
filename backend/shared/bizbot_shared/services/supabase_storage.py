@@ -36,97 +36,36 @@ class StorageService:
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
         return f"{timestamp}_{uuid4().hex}{ext}"
 
-    def _get_file_url(self, name: str) -> str:
+    def get_url(self, storage_path: str) -> str:
         client = self._client_instance()
         bucket = self._settings.supabase_bucket
         if self._settings.supabase_public_bucket:
-            return client.storage.from_(bucket).get_public_url(name)
+            return client.storage.from_(bucket).get_public_url(storage_path)
         signed = client.storage.from_(bucket).create_signed_url(
-            name, self._settings.supabase_signed_url_seconds
+            storage_path, self._settings.supabase_signed_url_seconds
         )
         if isinstance(signed, dict) and signed.get("error"):
             raise RuntimeError(signed["error"]["message"])
         return signed.get("signedURL")
 
-    def _is_image_name(self, name: str) -> bool:
-        if name.startswith("."):
-            return False
-        return Path(name).suffix.lower() in {
-            ".jpg",
-            ".jpeg",
-            ".png",
-            ".webp",
-            ".gif",
-            ".bmp",
-            ".heic",
-            ".heif",
-        }
-
     def upload_image_bytes(
         self, content: bytes, content_type: str, original_name: str | None
-    ) -> tuple[str, str]:
-        name = self._make_filename(original_name, content_type)
+    ) -> str:
+        storage_path = self._make_filename(original_name, content_type)
         client = self._client_instance()
 
         res = client.storage.from_(self._settings.supabase_bucket).upload(
-            name,
+            storage_path,
             content,
             {"content-type": content_type},
         )
         if isinstance(res, dict) and res.get("error"):
             raise RuntimeError(res["error"]["message"])
 
-        url = self._get_file_url(name)
-        return name, url
+        return storage_path
 
-    def list_images(self, limit: int, offset: int) -> list[dict]:
+    def delete_object(self, storage_path: str) -> None:
         client = self._client_instance()
-        res = client.storage.from_(self._settings.supabase_bucket).list(
-            path="",
-            options={
-                "limit": limit,
-                "offset": offset,
-                "sortBy": {"column": "created_at", "order": "desc"},
-            },
-        )
+        res = client.storage.from_(self._settings.supabase_bucket).remove([storage_path])
         if isinstance(res, dict) and res.get("error"):
             raise RuntimeError(res["error"]["message"])
-
-        items: list[dict] = []
-        for obj in res:
-            name = obj.get("name")
-            if not name or not self._is_image_name(name):
-                continue
-            url = self._get_file_url(name)
-            items.append(
-                {
-                    "name": name,
-                    "created_at": obj.get("created_at"),
-                    "url": url,
-                }
-            )
-        return items
-
-    def get_oldest_image(self) -> dict | None:
-        client = self._client_instance()
-        res = client.storage.from_(self._settings.supabase_bucket).list(
-            path="",
-            options={
-                "limit": 100,
-                "offset": 0,
-                "sortBy": {"column": "created_at", "order": "asc"},
-            },
-        )
-        if isinstance(res, dict) and res.get("error"):
-            raise RuntimeError(res["error"]["message"])
-
-        for obj in res:
-            name = obj.get("name")
-            if not name or not self._is_image_name(name):
-                continue
-            return {
-                "name": name,
-                "created_at": obj.get("created_at"),
-                "url": self._get_file_url(name),
-            }
-        return None
