@@ -33,8 +33,8 @@ _PROMPT = (
     "\n"
     "Return ONLY JSON matching the schema.\n"
     "Return: { \"score\": float 0.0 to 1.0 }\n"
-    "If uncertain, return around 0.8.\n"
-    "Be very generous on the judging and only mark lower than 0.8 if there are very clear technical photo issues, The photos are supposed to be candid/B-roll\n"
+    "If uncertain, return around 0.70.\n"
+    "Be very generous on the judging and only mark lower than 0.70 if there are very clear technical photo issues, The photos are supposed to be candid/B-roll\n"
 )
 
 
